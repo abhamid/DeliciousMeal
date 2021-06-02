@@ -6,6 +6,9 @@ import '../widgets/meal_item.dart';
 
 class CategoryMealsPage extends StatefulWidget {
   static const routeName = '/category-meals';
+  final List<Meal> availableMeals;
+
+  CategoryMealsPage({this.availableMeals});
 
   @override
   _CategoryMealsPageState createState() => _CategoryMealsPageState();
@@ -31,7 +34,7 @@ class _CategoryMealsPageState extends State<CategoryMealsPage> {
           ModalRoute.of(context).settings.arguments as Map<String, String>;
       _categoryId = routeArgs['id'];
       _categoryTitle = routeArgs['title'];
-      _dummyMeals = DUMMY_MEALS.where((meal) {
+      _dummyMeals = widget.availableMeals.where((meal) {
         return meal.categories.contains(_categoryId);
       }).toList();
       _didDummyMealInitialised = true;
@@ -63,7 +66,7 @@ class _CategoryMealsPageState extends State<CategoryMealsPage> {
             complexity: mealItem.complexity,
             imageUrl: mealItem.imageUrl,
             duration: mealItem.duration,
-            onPressDeleteMeal: _doDeleteMealWithId,
+            //onPressDeleteMeal: _doDeleteMealWithId,
           );
         },
         itemCount: this._dummyMeals.length,

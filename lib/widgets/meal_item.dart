@@ -18,7 +18,7 @@ class MealItem extends StatelessWidget {
   //final bool isVegan;
   //final bool isVegetarian;
   //final bool isLactoseFree;
-  final Function onPressDeleteMeal;
+  //final Function onPressDeleteMeal;
 
   MealItem({
     @required this.id,
@@ -34,7 +34,7 @@ class MealItem extends StatelessWidget {
     //@required this.isVegan,
     //@required this.isVegetarian,
     //@required this.isLactoseFree,
-    @required this.onPressDeleteMeal,
+    //@required this.onPressDeleteMeal,
   });
 
   void _selectMeal(BuildContext context) {
@@ -44,10 +44,10 @@ class MealItem extends StatelessWidget {
         'id': this.id,
       },
     ).then((result) {
-      if (result != null && result is Map<String, Object>) {
-        var id = result['id'];
-        onPressDeleteMeal(id);
-      }
+      // if (result != null && result is Map<String, Object>) {
+      //   var id = result['id'];
+      //   onPressDeleteMeal(id);
+      // }
     });
   }
 

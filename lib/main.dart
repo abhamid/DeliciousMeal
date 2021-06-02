@@ -7,14 +7,88 @@ import './screens/category_meals_page.dart';
 import './screens/meal_detail_page.dart';
 import './screens/top_tab_page.dart';
 import './screens/bottom_tab_page.dart';
-import 'screens/filters_page.dart';
+import './screens/filters_page.dart';
+import './model/meal.dart';
+import './data/dummy_data.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   // This widget is the root of your application.
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Map<String, bool> _filters = {
+    'gluten': false,
+    'vegan': false,
+    'vegetarian': false,
+    'lactoseFree': false,
+  };
+
+  List<Meal> _availableMeals = DUMMY_MEALS;
+  List<Meal> _favouriteMeals = [];
+
+  void _saveFilters(Map<String, bool> selectedFilter) {
+    setState(() {
+      this._filters = selectedFilter;
+
+      _availableMeals = DUMMY_MEALS.where((meal) {
+        if (_filters['gluten'] && !meal.isGlutenFree) {
+          return false;
+        }
+
+        if (_filters['vegan'] && !meal.isVegan) {
+          return false;
+        }
+
+        if (_filters['vegetarian'] && !meal.isVegetarian) {
+          return false;
+        }
+
+        if (_filters['lactoseFree'] && !meal.isLactoseFree) {
+          return false;
+        }
+
+        return true;
+      }).toList();
+    });
+  }
+
+  void _toggleFavouriteMeal(String mealId) {
+    int existingMealFavouriteIndex =
+        _favouriteMeals.indexWhere((meal) => meal.id == mealId);
+
+    if (existingMealFavouriteIndex >= 0) {
+      //remove the meal from favourites
+      setState(() {
+        _favouriteMeals.removeAt(existingMealFavouriteIndex);
+      });
+    } else {
+      //Add the meal to favourites
+      setState(() {
+        _favouriteMeals.add(
+          DUMMY_MEALS.firstWhere((meal) => meal.id == mealId),
+        );
+      });
+    }
+  }
+
+  bool _isMealFavourite(String mealId) {
+    int existingMealFavouriteIndex =
+        _favouriteMeals.indexWhere((meal) => meal.id == mealId);
+
+    if (existingMealFavouriteIndex >= 0) {
+      return true;
+    }
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,10 +115,20 @@ class MyApp extends StatelessWidget {
       routes: {
         //'/': (ctx) => CategoriesPage(),
         //'/': (ctx) => TopTabsPage(),
-        '/': (ctx) => BottomTabPage(),
-        CategoryMealsPage.routeName: (ctx) => CategoryMealsPage(),
-        MealDetailPage.routeName: (ctx) => MealDetailPage(),
-        FiltersPage.routeName: (ctx) => FiltersPage(),
+        '/': (ctx) => BottomTabPage(
+              favouriteMeals: _favouriteMeals,
+            ),
+        CategoryMealsPage.routeName: (ctx) => CategoryMealsPage(
+              availableMeals: this._availableMeals,
+            ),
+        MealDetailPage.routeName: (ctx) => MealDetailPage(
+              toggleFavouriteMeal: _toggleFavouriteMeal,
+              isMealFavourite: _isMealFavourite,
+            ),
+        FiltersPage.routeName: (ctx) => FiltersPage(
+              filter: this._filters,
+              saveFilters: this._saveFilters,
+            ),
       },
       onGenerateRoute: (settings) {
         print(settings.arguments);
